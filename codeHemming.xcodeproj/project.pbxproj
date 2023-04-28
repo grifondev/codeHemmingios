@@ -8,17 +8,24 @@
 
 /* Begin PBXBuildFile section */
 		049D51E929FBFF0F00B8D2A7 /* codeHemmingApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049D51E829FBFF0F00B8D2A7 /* codeHemmingApp.swift */; };
-		049D51EB29FBFF0F00B8D2A7 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049D51EA29FBFF0F00B8D2A7 /* ContentView.swift */; };
+		049D51EB29FBFF0F00B8D2A7 /* codeHemmingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049D51EA29FBFF0F00B8D2A7 /* codeHemmingView.swift */; };
 		049D51ED29FBFF0F00B8D2A7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 049D51EC29FBFF0F00B8D2A7 /* Assets.xcassets */; };
 		049D51F029FBFF0F00B8D2A7 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 049D51EF29FBFF0F00B8D2A7 /* Preview Assets.xcassets */; };
+		049D51F729FBFFED00B8D2A7 /* codeHemmingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049D51F629FBFFED00B8D2A7 /* codeHemmingViewModel.swift */; };
+		049D51FA29FC031500B8D2A7 /* LibreBaskerville-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 049D51F929FC031500B8D2A7 /* LibreBaskerville-Bold.ttf */; };
+		049D51FD29FC411500B8D2A7 /* LibreBaskerville-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 049D51FC29FC411500B8D2A7 /* LibreBaskerville-Italic.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		049D51E529FBFF0F00B8D2A7 /* codeHemming.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = codeHemming.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		049D51E829FBFF0F00B8D2A7 /* codeHemmingApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = codeHemmingApp.swift; sourceTree = "<group>"; };
-		049D51EA29FBFF0F00B8D2A7 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		049D51EA29FBFF0F00B8D2A7 /* codeHemmingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = codeHemmingView.swift; sourceTree = "<group>"; };
 		049D51EC29FBFF0F00B8D2A7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		049D51EF29FBFF0F00B8D2A7 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		049D51F629FBFFED00B8D2A7 /* codeHemmingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = codeHemmingViewModel.swift; sourceTree = "<group>"; };
+		049D51F829FC02DB00B8D2A7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		049D51F929FC031500B8D2A7 /* LibreBaskerville-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "LibreBaskerville-Bold.ttf"; sourceTree = "<group>"; };
+		049D51FC29FC411500B8D2A7 /* LibreBaskerville-Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "LibreBaskerville-Italic.ttf"; path = "Shared/Font/LibreBaskerville-Italic.ttf"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,8 +58,11 @@
 		049D51E729FBFF0F00B8D2A7 /* codeHemming */ = {
 			isa = PBXGroup;
 			children = (
+				049D51FB29FC032B00B8D2A7 /* Fonts */,
+				049D51F829FC02DB00B8D2A7 /* Info.plist */,
+				049D51F629FBFFED00B8D2A7 /* codeHemmingViewModel.swift */,
 				049D51E829FBFF0F00B8D2A7 /* codeHemmingApp.swift */,
-				049D51EA29FBFF0F00B8D2A7 /* ContentView.swift */,
+				049D51EA29FBFF0F00B8D2A7 /* codeHemmingView.swift */,
 				049D51EC29FBFF0F00B8D2A7 /* Assets.xcassets */,
 				049D51EE29FBFF0F00B8D2A7 /* Preview Content */,
 			);
@@ -65,6 +75,15 @@
 				049D51EF29FBFF0F00B8D2A7 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		049D51FB29FC032B00B8D2A7 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				049D51FC29FC411500B8D2A7 /* LibreBaskerville-Italic.ttf */,
+				049D51F929FC031500B8D2A7 /* LibreBaskerville-Bold.ttf */,
+			);
+			path = Fonts;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -125,8 +144,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				049D51FD29FC411500B8D2A7 /* LibreBaskerville-Italic.ttf in Resources */,
 				049D51F029FBFF0F00B8D2A7 /* Preview Assets.xcassets in Resources */,
 				049D51ED29FBFF0F00B8D2A7 /* Assets.xcassets in Resources */,
+				049D51FA29FC031500B8D2A7 /* LibreBaskerville-Bold.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -137,7 +158,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				049D51EB29FBFF0F00B8D2A7 /* ContentView.swift in Sources */,
+				049D51F729FBFFED00B8D2A7 /* codeHemmingViewModel.swift in Sources */,
+				049D51EB29FBFF0F00B8D2A7 /* codeHemmingView.swift in Sources */,
 				049D51E929FBFF0F00B8D2A7 /* codeHemmingApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -269,6 +291,8 @@
 				DEVELOPMENT_ASSET_PATHS = "\"codeHemming/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = codeHemming/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -297,6 +321,8 @@
 				DEVELOPMENT_ASSET_PATHS = "\"codeHemming/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = codeHemming/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

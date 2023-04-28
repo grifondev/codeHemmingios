@@ -11,7 +11,12 @@ import SwiftUI
 struct codeHemmingApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            codeHemmingView()
         }
     }
+}
+
+extension UIScreen {
+    public static let screenWidth = UIScreen.main.bounds.size.width
+    public static let screenHeight = UIScreen.main.bounds.size.height
 }
