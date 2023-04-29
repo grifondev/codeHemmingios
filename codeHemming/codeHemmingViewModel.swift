@@ -6,10 +6,34 @@
 //
 import Foundation
 
-func calculateValues(data: [String]) -> [String] {
+func calculateControlBits(data: [String]) -> [String] {
     var data = data
     let data_len: Int = data.count
-
+    
+    var step: Int = 0
+    
+    var current_position = 1
+    var counter: Int = 0
+    while current_position < data_len {
+        var count_of_ones = 0
+        
+        for i in stride(from: step, to: data_len, by: (step+1)*2) {
+            for j in 0...step {
+                if i+j < data_len {
+                    if data[i+j] == "1" {
+                        count_of_ones += 1
+                    }
+                }
+            }
+        }
+        
+        data[current_position-1] = String(count_of_ones % 2)
+        
+        counter += 1
+        current_position = NSDecimalNumber(decimal: pow(2, counter)).intValue
+        step = current_position-1
+    }
+    
     return data
 }
 
@@ -58,7 +82,7 @@ func make2base(message: String) -> [String] {
 
     words_in_2base = insertZeroesInPositions(message: words_in_2base)
     //print(words_in_2base)
-    words_in_2base = calculateValues(data: words_in_2base)
+    words_in_2base = calculateControlBits(data: words_in_2base)
     //print(words_in_2base)
     
     return words_in_2base

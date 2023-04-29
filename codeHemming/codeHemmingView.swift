@@ -9,7 +9,7 @@ import SwiftUI
 
 struct codeHemmingView: View {
 
-    @State var message = ""
+    @State var message = "Дима"
     
     let italic_font = "LibreBaskerville-Italic"
     let bold_font = "LibreBaskerville-Bold"
