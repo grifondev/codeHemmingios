@@ -14,6 +14,7 @@
 		049D51F729FBFFED00B8D2A7 /* codeHemmingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049D51F629FBFFED00B8D2A7 /* codeHemmingViewModel.swift */; };
 		049D51FA29FC031500B8D2A7 /* LibreBaskerville-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 049D51F929FC031500B8D2A7 /* LibreBaskerville-Bold.ttf */; };
 		049D51FD29FC411500B8D2A7 /* LibreBaskerville-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 049D51FC29FC411500B8D2A7 /* LibreBaskerville-Italic.ttf */; };
+		049D51FF29FDA81F00B8D2A7 /* codeHemmingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049D51FE29FDA81F00B8D2A7 /* codeHemmingModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,7 @@
 		049D51F829FC02DB00B8D2A7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		049D51F929FC031500B8D2A7 /* LibreBaskerville-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "LibreBaskerville-Bold.ttf"; sourceTree = "<group>"; };
 		049D51FC29FC411500B8D2A7 /* LibreBaskerville-Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "LibreBaskerville-Italic.ttf"; path = "Shared/Font/LibreBaskerville-Italic.ttf"; sourceTree = SOURCE_ROOT; };
+		049D51FE29FDA81F00B8D2A7 /* codeHemmingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = codeHemmingModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,6 +67,7 @@
 				049D51EA29FBFF0F00B8D2A7 /* codeHemmingView.swift */,
 				049D51EC29FBFF0F00B8D2A7 /* Assets.xcassets */,
 				049D51EE29FBFF0F00B8D2A7 /* Preview Content */,
+				049D51FE29FDA81F00B8D2A7 /* codeHemmingModel.swift */,
 			);
 			path = codeHemming;
 			sourceTree = "<group>";
@@ -160,6 +163,7 @@
 			files = (
 				049D51F729FBFFED00B8D2A7 /* codeHemmingViewModel.swift in Sources */,
 				049D51EB29FBFF0F00B8D2A7 /* codeHemmingView.swift in Sources */,
+				049D51FF29FDA81F00B8D2A7 /* codeHemmingModel.swift in Sources */,
 				049D51E929FBFF0F00B8D2A7 /* codeHemmingApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

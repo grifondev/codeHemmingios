@@ -6,6 +6,14 @@
 //
 import Foundation
 
+func createButtonsFromMessage(message: [String]) -> [char] {
+    var characters: [char] = []
+    for i in 1...message.count-1 {
+        characters.append(char(id: i, value: message[i]))
+    }
+    return characters
+}
+
 func calculateControlBits(data: [String]) -> [String] {
     var data = data
     let data_len: Int = data.count
@@ -81,9 +89,8 @@ func make2base(message: String) -> [String] {
     }
 
     words_in_2base = insertZeroesInPositions(message: words_in_2base)
-    //print(words_in_2base)
+    
     words_in_2base = calculateControlBits(data: words_in_2base)
-    //print(words_in_2base)
     
     return words_in_2base
 }

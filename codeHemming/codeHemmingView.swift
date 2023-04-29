@@ -11,8 +11,12 @@ struct codeHemmingView: View {
 
     @State var message = "Дима"
     
-    let italic_font = "LibreBaskerville-Italic"
-    let bold_font = "LibreBaskerville-Bold"
+    @State var disassembled_message: [String] = []
+    
+    @State var characters: [char] = []
+    
+    public let italic_font = "LibreBaskerville-Italic"
+    public let bold_font = "LibreBaskerville-Bold"
     
     var body: some View {
         NavigationView {
@@ -55,7 +59,8 @@ struct codeHemmingView: View {
                 }
                 
                 Button {
-                    make2base(message: message)
+                    disassembled_message = make2base(message: message)
+                    characters = createButtonsFromMessage(message: disassembled_message)
                 } label: {
                     ZStack {
                         Rectangle()
@@ -78,12 +83,51 @@ struct codeHemmingView: View {
                     .padding(.top, -30)
                 }
                 
+                if disassembled_message.count > 0 {
+                    displayBinaryMessage(message: characters)
+                }
+                
                 Spacer()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color(red: 238/255, green: 257/255, blue: 163/255))
         }
     }
+}
+
+struct char: View {
+    var id: Int
+    var value: String
+    var body: some View {
+        Button {
+            
+        } label: {
+            Text(value)
+                .foregroundColor(Color.red)
+        }
+    }
+}
+
+func displayBinaryMessage(message: [char]) -> some View {
+    return ScrollView(.horizontal, showsIndicators: false) {
+        HStack {
+            ForEach(message, id: \.id) { one_char in
+                char(id: one_char.id, value: String(one_char.value))
+            }
+        }
+    }
+    .frame(width: 300)
+    .multilineTextAlignment(.center)
+}
+
+func changeValue(char: char) -> char {
+    var char = char
+    if char.value == "0" {
+        char.value = "1ONE"
+    } else {
+        char.value = "0ZERO"
+    }
+    return char
 }
 
 struct codeHemmingView_Previews: PreviewProvider {
