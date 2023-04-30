@@ -44,14 +44,13 @@ struct codeHemmingView: View {
                     TextField("Input your message here", text: $message)
                         .font(.custom(Font.italic_font, size: 20))
                         .foregroundColor(Color(red: 94/255, green: 32/255, blue: 141/255))
-                        .padding(.top, 25)
                         .padding(.leading, UIScreen.screenWidth*0)
                         .multilineTextAlignment(.center)
                     Rectangle()
                         .foregroundColor(Color(red: 123/255, green: 149/255, blue: 56/255))
                         .frame(width: 275, height: 3)
                         .cornerRadius(10)
-                        .padding(.top, 70)
+                        .padding(.top, 40)
                         .padding(.leading, UIScreen.screenWidth*0)
                 }
                 
@@ -94,10 +93,8 @@ struct codeHemmingView: View {
                     Text("Your changed bit is " + calculateChangedBit())
                         .font(.custom(Font.bold_font, size: 18))
                         .foregroundColor(Color(red: 94/255, green: 32/255, blue: 141/255))
-                        .padding(.top, 10)
+                        .padding(.top, 40)
                 }
-                
-                
                 
                 Spacer()
             }
@@ -108,15 +105,36 @@ struct codeHemmingView: View {
     
     func displayBinaryMessage(message: [char]) -> some View {
         return VStack {
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack {
-                    ForEach(message, id: \.id) { one_char in
-                        char(id: one_char.id, value: String(one_char.value))
+            ZStack {
+                Rectangle()
+                    .foregroundColor(Color(red: 183/255, green: 208/255, blue: 84/255))
+                    .frame(width: 350, height: 50)
+                    .cornerRadius(60)
+                    .padding(.top,3)
+                    .padding(.leading,3)
+                Rectangle()
+                    .foregroundColor(Color(red: 183/255, green: 248/255, blue: 84/255))
+                    .frame(width: 350, height: 50)
+                    .cornerRadius(60)
+                ScrollView(.horizontal, showsIndicators: false) {
+                    VStack {
+                        HStack {
+                            ForEach(message, id: \.id) { one_char in
+                                VStack {
+                                    Text(String(one_char.id))
+                                        .font(.custom(Font.bold_font, size: 14))
+                                        .foregroundColor(Color(red: 94/255, green: 32/255, blue: 141/255))
+                                        .multilineTextAlignment(.center)
+                                    char(id: one_char.id, value: String(one_char.value))
+                                }
+                            }
+                        }
                     }
                 }
+                .frame(width: 310)
+                .multilineTextAlignment(.center)
             }
-            .frame(width: 300)
-            .multilineTextAlignment(.center)
+            
             Button {
                 display_legal_error.toggle()
                 display_legal_error.toggle()
@@ -133,7 +151,7 @@ struct codeHemmingView: View {
                         .frame(width: 200, height: 20)
                         .cornerRadius(30)
                         .padding(.trailing, 5)
-                    Text("process")
+                    Text("find selected bit")
                         .font(.custom(Font.bold_font, size: 16))
                         .foregroundColor(Color(red: 148/255, green: 83/255, blue: 198/255))
                 }
@@ -147,7 +165,7 @@ func displayControlBits() -> some View {
         Text("Control bits:")
             .font(.custom(Font.bold_font, size: 24))
             .foregroundColor(Color(red: 148/255, green: 83/255, blue: 198/255))
-            .padding(.top, 10)
+            .padding(.top, 30)
         HStack {
             VStack {
                 Text("Before:")
