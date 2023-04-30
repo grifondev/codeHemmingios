@@ -11,12 +11,9 @@ struct codeHemmingView: View {
 
     @State var message = "Дима"
     
+    @State var display_legal_error = false
+    
     @State var disassembled_message: [String] = []
-    
-    @State var characters: [char] = []
-    
-    public let italic_font = "LibreBaskerville-Italic"
-    public let bold_font = "LibreBaskerville-Bold"
     
     var body: some View {
         NavigationView {
@@ -26,26 +23,26 @@ struct codeHemmingView: View {
                         .foregroundColor(Color(red: 123/255, green: 149/255, blue: 56/255))
                         .frame(width: 350, height: 90)
                         .cornerRadius(30)
-                        .padding(.top, 50)
+                        .padding(.top, 10)
                         .padding(.leading, 5)
                     Rectangle()
                         .foregroundColor(Color(red: 203/255, green: 248/255, blue: 84/255))
                         .frame(width: 350, height: 90)
                         .cornerRadius(30)
-                        .padding(.top, 40)
                         .padding(.trailing, 5)
                     Text("Hemming code")
-                        .font(.custom(bold_font, size: 35))
-                        .padding(.top, 50)
+                        .font(.custom(Font.bold_font, size: 35))
+                        .padding(.top, 10)
                         .foregroundColor(Color(red: 148/255, green: 83/255, blue: 198/255))
                 }
+                .padding(.top, 40)
                 Text("Input your message below:")
-                    .font(.custom(bold_font, size: 22))
-                    .padding(.top, 30)
+                    .font(.custom(Font.bold_font, size: 22))
+                    .padding(.top, 10)
                     .foregroundColor(Color(red: 94/255, green: 32/255, blue: 141/255))
                 ZStack {
                     TextField("Input your message here", text: $message)
-                        .font(.custom(italic_font, size: 20))
+                        .font(.custom(Font.italic_font, size: 20))
                         .foregroundColor(Color(red: 94/255, green: 32/255, blue: 141/255))
                         .padding(.top, 25)
                         .padding(.leading, UIScreen.screenWidth*0)
@@ -60,7 +57,8 @@ struct codeHemmingView: View {
                 
                 Button {
                     disassembled_message = make2base(message: message)
-                    characters = createButtonsFromMessage(message: disassembled_message)
+                    chars = createButtonsFromMessage(message: disassembled_message)
+                    display_legal_error = true
                 } label: {
                     ZStack {
                         Rectangle()
@@ -76,16 +74,30 @@ struct codeHemmingView: View {
                             .padding(.top, 40)
                             .padding(.trailing, 5)
                         Text("convert")
-                            .font(.custom(bold_font, size: 25))
+                            .font(.custom(Font.bold_font, size: 25))
                             .padding(.top, 40)
                             .foregroundColor(Color(red: 148/255, green: 83/255, blue: 198/255))
                     }
-                    .padding(.top, -30)
+                    .padding(.top, -40)
                 }
                 
                 if disassembled_message.count > 0 {
-                    displayBinaryMessage(message: characters)
+                    Text("Your message in binary:")
+                        .font(.custom(Font.bold_font, size: 14))
+                        .foregroundColor(Color(red: 94/255, green: 32/255, blue: 141/255))
+                        .padding(.top, 5)
+                    displayBinaryMessage(message: chars)
                 }
+                
+                if display_legal_error {
+                    displayControlBits()
+                    Text("Your changed bit is " + calculateChangedBit())
+                        .font(.custom(Font.bold_font, size: 18))
+                        .foregroundColor(Color(red: 94/255, green: 32/255, blue: 141/255))
+                        .padding(.top, 10)
+                }
+                
+                
                 
                 Spacer()
             }
@@ -93,41 +105,111 @@ struct codeHemmingView: View {
             .background(Color(red: 238/255, green: 257/255, blue: 163/255))
         }
     }
-}
-
-struct char: View {
-    var id: Int
-    var value: String
-    var body: some View {
-        Button {
-            
-        } label: {
-            Text(value)
-                .foregroundColor(Color.red)
-        }
-    }
-}
-
-func displayBinaryMessage(message: [char]) -> some View {
-    return ScrollView(.horizontal, showsIndicators: false) {
-        HStack {
-            ForEach(message, id: \.id) { one_char in
-                char(id: one_char.id, value: String(one_char.value))
+    
+    func displayBinaryMessage(message: [char]) -> some View {
+        return VStack {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack {
+                    ForEach(message, id: \.id) { one_char in
+                        char(id: one_char.id, value: String(one_char.value))
+                    }
+                }
+            }
+            .frame(width: 300)
+            .multilineTextAlignment(.center)
+            Button {
+                display_legal_error.toggle()
+                display_legal_error.toggle()
+            } label: {
+                ZStack {
+                    Rectangle()
+                        .foregroundColor(Color(red: 123/255, green: 149/255, blue: 56/255))
+                        .frame(width: 200, height: 20)
+                        .cornerRadius(30)
+                        .padding(.top, 3)
+                        .padding(.leading, 1)
+                    Rectangle()
+                        .foregroundColor(Color(red: 203/255, green: 248/255, blue: 84/255))
+                        .frame(width: 200, height: 20)
+                        .cornerRadius(30)
+                        .padding(.trailing, 5)
+                    Text("process")
+                        .font(.custom(Font.bold_font, size: 16))
+                        .foregroundColor(Color(red: 148/255, green: 83/255, blue: 198/255))
+                }
             }
         }
     }
-    .frame(width: 300)
-    .multilineTextAlignment(.center)
 }
 
-func changeValue(char: char) -> char {
-    var char = char
-    if char.value == "0" {
-        char.value = "1ONE"
-    } else {
-        char.value = "0ZERO"
+func displayControlBits() -> some View {
+    return VStack {
+        Text("Control bits:")
+            .font(.custom(Font.bold_font, size: 24))
+            .foregroundColor(Color(red: 148/255, green: 83/255, blue: 198/255))
+            .padding(.top, 10)
+        HStack {
+            VStack {
+                Text("Before:")
+                    .font(.custom(Font.bold_font, size: 20))
+                    .foregroundColor(Color(red: 94/255, green: 32/255, blue: 141/255))
+                if control_bits_before.isEmpty {
+                    Text("first convert your message to binary")
+                        .font(.custom(Font.bold_font, size: 12))
+                        .foregroundColor(Color(red: 94/255, green: 32/255, blue: 141/255))
+                        .multilineTextAlignment(.center)
+                        .frame(width: 100)
+                } else {
+                    ForEach(control_bits_before, id: \.id) { bit in
+                        Text(bit.bit)
+                            .font(.custom(Font.bold_font, size: 12))
+                            .foregroundColor(Color(red: 94/255, green: 32/255, blue: 141/255))
+                            .padding(.all, 1)
+                    }
+                }
+            }
+            Text("-->")
+                .font(.custom(Font.bold_font, size: 20))
+                .foregroundColor(Color(red: 148/255, green: 83/255, blue: 198/255))
+                .multilineTextAlignment(.center)
+                .padding(.all, 30)
+            VStack {
+                Text("After:")
+                    .font(.custom(Font.bold_font, size: 20))
+                    .foregroundColor(Color(red: 94/255, green: 32/255, blue: 141/255))
+                if control_bits_after.isEmpty {
+                    Text("select 1 random bit to continue")
+                        .font(.custom(Font.bold_font, size: 12))
+                        .foregroundColor(Color(red: 94/255, green: 32/255, blue: 141/255))
+                        .multilineTextAlignment(.center)
+                        .frame(width: 100)
+                } else {
+                    ForEach(control_bits_after, id: \.id) { bit in
+                        Text(bit.bit)
+                            .font(.custom(Font.bold_font, size: 12))
+                            .foregroundColor(Color(red: 94/255, green: 32/255, blue: 141/255))
+                            .padding(.all, 1)
+                    }
+                }
+            }
+        }
+        .padding(.top, -10)
     }
-    return char
+}
+
+public struct char: View {
+    var id: Int
+    var value: String
+    public var body: some View {
+        Button {
+            chars = changeValue(char: self, chars: chars)
+            chars = calculateError(chars: chars)
+        } label: {
+            Text(value)
+                .font(.custom(Font.bold_font, size: 18))
+                .foregroundColor(Color.purple)
+        }
+    }
 }
 
 struct codeHemmingView_Previews: PreviewProvider {

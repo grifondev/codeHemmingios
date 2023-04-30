@@ -63,11 +63,11 @@
 				049D51FB29FC032B00B8D2A7 /* Fonts */,
 				049D51F829FC02DB00B8D2A7 /* Info.plist */,
 				049D51F629FBFFED00B8D2A7 /* codeHemmingViewModel.swift */,
-				049D51E829FBFF0F00B8D2A7 /* codeHemmingApp.swift */,
+				049D51FE29FDA81F00B8D2A7 /* codeHemmingModel.swift */,
 				049D51EA29FBFF0F00B8D2A7 /* codeHemmingView.swift */,
+				049D51E829FBFF0F00B8D2A7 /* codeHemmingApp.swift */,
 				049D51EC29FBFF0F00B8D2A7 /* Assets.xcassets */,
 				049D51EE29FBFF0F00B8D2A7 /* Preview Content */,
-				049D51FE29FDA81F00B8D2A7 /* codeHemmingModel.swift */,
 			);
 			path = codeHemming;
 			sourceTree = "<group>";

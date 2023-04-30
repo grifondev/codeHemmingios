@@ -6,15 +6,72 @@
 //
 import Foundation
 
-func createButtonsFromMessage(message: [String]) -> [char] {
-    var characters: [char] = []
-    for i in 1...message.count-1 {
-        characters.append(char(id: i, value: message[i]))
+var chars: [char] = []
+
+var control_bits_before: [control_bits] = []
+var control_bits_after: [control_bits] = []
+
+func calculateChangedBit() -> String {
+    var sum = 0
+    
+    if !control_bits_after.isEmpty {
+        for i in 0...control_bits_after.count-1 {
+            if (Int(control_bits_after[i].bit)! % 2 == 1) {
+                sum += NSDecimalNumber(decimal: pow(2, i)).intValue
+            }
+        }
     }
-    return characters
+    
+    return sum > 0 ? String(sum) : "none"
 }
 
-func calculateControlBits(data: [String]) -> [String] {
+func calculateError(chars: [char]) -> [char]{
+    control_bits_after = []
+    var data: [String] = []
+    
+    for item in chars {
+        data.append(item.value)
+    }
+    data = calculateControlBits(data: data, onlyShow: true)
+    
+    var new_chars: [char] = []
+    for i in 0...data.count-1 {
+        new_chars.append(char(id: i+1, value: data[i]))
+    }
+    
+    return new_chars
+}
+
+func createButtonsFromMessage(message: [String]) -> [char] {
+    var chars: [char] = []
+    for i in 0...message.count-1 {
+        chars.append(char(id: i+1, value: message[i]))
+    }
+    return chars
+}
+
+func changeValue(char: char, chars: [char]) -> [char] {
+    var char = char
+    var temp_char: [char] = chars
+
+    for elem in temp_char {
+        if elem.id == char.id {
+            
+            if char.value == "0" {
+                char.value = "1"
+            } else if char.value == "1" {
+                char.value = "0"
+            }
+            temp_char.remove(at: char.id-1)
+            temp_char.insert(char, at: char.id-1)
+
+            break
+        }
+    }
+    return temp_char
+}
+
+func calculateControlBits(data: [String], onlyShow: Bool = false) -> [String] {
     var data = data
     let data_len: Int = data.count
     
@@ -34,8 +91,17 @@ func calculateControlBits(data: [String]) -> [String] {
                 }
             }
         }
+        let isOne = count_of_ones % 2
         
-        data[current_position-1] = String(count_of_ones % 2)
+        if !onlyShow {
+            data[current_position-1] = String(isOne)
+        }
+
+        if onlyShow {
+            control_bits_after.append(control_bits(bit: String(count_of_ones)))
+        } else {
+            control_bits_before.append(control_bits(bit: String(count_of_ones + isOne)))
+        }
         
         counter += 1
         current_position = NSDecimalNumber(decimal: pow(2, counter)).intValue
@@ -78,6 +144,8 @@ func insertZeroesInPositions(message:[String]) -> [String] {
 }
 
 func make2base(message: String) -> [String] {
+    control_bits_before = []
+    
     var words_in_2base: [String] = []
     
     for char in message {

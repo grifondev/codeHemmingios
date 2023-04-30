@@ -16,6 +16,11 @@ struct codeHemmingApp: App {
     }
 }
 
+extension Font {
+    public static let bold_font = "LibreBaskerville-Bold"
+    public static let italic_font = "LibreBaskerville-Italic"
+}
+
 extension UIScreen {
     public static let screenWidth = UIScreen.main.bounds.size.width
     public static let screenHeight = UIScreen.main.bounds.size.height
