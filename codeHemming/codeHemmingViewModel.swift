@@ -6,23 +6,93 @@
 //
 import Foundation
 
-var chars: [char] = []
+var encoded_data: [char] = []
+var decoded_data: [char] = []
+var decoded_data_after: [char] = []
 
 var control_bits_before: [control_bits] = []
 var control_bits_after: [control_bits] = []
+var decode_control_bits: [control_bits] = []
 
-func calculateChangedBit() -> String {
+func getResultDecodedString() -> String {
+    var result_string: String = ""
+    let banned_ids: [Int] = [1,2,4,8,16,32,64,128,256,512,1024]
+    
+    for item in decoded_data {
+        if banned_ids.contains(item.id) {
+            
+        } else {
+            result_string += item.value
+        }
+    }
+    
+    var res = strtoul(result_string, nil, 2)
+    var res1 = Int(res)
+    result_string = String(UnicodeScalar(res1 + 848)!)
+    
+    return result_string
+}
+
+func correctMessage(message: [char]) -> [char] {
+    var temp_array: [String] = []
+    var data_to_decode: [char] = []
+    
+    for item in message {
+        temp_array.append(item.value)
+    }
+    
+    temp_array = calculateControlBits(data: temp_array, forDecode: true)
+    let changed_bit = calculateChangedBit(array_of_control_bits: decode_control_bits)
+    
+    data_to_decode = decoded_data
+    for item in data_to_decode {
+        if String(item.id) == changed_bit {
+            decoded_data = changeValue(char: item, chars: decoded_data)
+            break
+        }
+    }
+    
+    return data_to_decode
+}
+
+func createMessageToDecode(message: String) -> [char] {
+    let message: String = message
+    var temp_arr: [String] = []
+    var decoded_message: [char] = []
+    
+    for char in message {
+        temp_arr.append(String(char))
+    }
+    
+    for i in 0...temp_arr.count-1 {
+        decoded_message.append(char(id:i+1, value: temp_arr[i]))
+    }
+
+    return decoded_message
+}
+
+func makeDesision(message: String) -> String {
+    if message.isEmpty {
+        return "bad data"
+    } else if (message.first?.unicodeScalars.first?.value == "1".unicodeScalars.first?.value ||
+               message.first?.unicodeScalars.first?.value == "0".unicodeScalars.first?.value) {
+        return "decode"
+    }
+    return "encode"
+}
+
+func calculateChangedBit(array_of_control_bits: [control_bits]) -> String {
     var sum = 0
     
-    if !control_bits_after.isEmpty {
-        for i in 0...control_bits_after.count-1 {
-            if (Int(control_bits_after[i].bit)! % 2 == 1) {
+    if !array_of_control_bits.isEmpty {
+        for i in 0...array_of_control_bits.count-1 {
+            if (Int(array_of_control_bits[i].bit)! % 2 == 1) {
                 sum += NSDecimalNumber(decimal: pow(2, i)).intValue
             }
         }
     }
     
-    return sum > 0 ? String(sum) : "none"
+    return sum > 0 ? String(sum) : "all bits are good"
 }
 
 func calculateError(chars: [char]) -> [char]{
@@ -56,7 +126,6 @@ func changeValue(char: char, chars: [char]) -> [char] {
 
     for elem in temp_char {
         if elem.id == char.id {
-            
             if char.value == "0" {
                 char.value = "1"
             } else if char.value == "1" {
@@ -71,7 +140,7 @@ func changeValue(char: char, chars: [char]) -> [char] {
     return temp_char
 }
 
-func calculateControlBits(data: [String], onlyShow: Bool = false) -> [String] {
+func calculateControlBits(data: [String], onlyShow: Bool = false, forDecode: Bool = false) -> [String] {
     var data = data
     let data_len: Int = data.count
     
@@ -79,6 +148,7 @@ func calculateControlBits(data: [String], onlyShow: Bool = false) -> [String] {
     
     var current_position = 1
     var counter: Int = 0
+    
     while current_position < data_len {
         var count_of_ones = 0
         
@@ -101,6 +171,10 @@ func calculateControlBits(data: [String], onlyShow: Bool = false) -> [String] {
             control_bits_after.append(control_bits(bit: String(count_of_ones)))
         } else {
             control_bits_before.append(control_bits(bit: String(count_of_ones + isOne)))
+        }
+        
+        if forDecode {
+            decode_control_bits.append(control_bits(bit: String(count_of_ones)))
         }
         
         counter += 1
