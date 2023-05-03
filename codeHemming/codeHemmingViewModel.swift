@@ -14,21 +14,40 @@ var control_bits_before: [control_bits] = []
 var control_bits_after: [control_bits] = []
 var decode_control_bits: [control_bits] = []
 
+func divideBinaryDataToChars(binary_data: String) -> [String] {
+    var result_data: [String] = []
+    
+    var current_bits: String = ""
+    for item in binary_data {
+        current_bits += String(item)
+        if current_bits.count == 8 {
+            result_data.append(current_bits)
+            current_bits = ""
+        }
+    }
+    
+    return result_data
+}
+
 func getResultDecodedString() -> String {
     var result_string: String = ""
+    var clear_binary_data: String = ""
     let banned_ids: [Int] = [1,2,4,8,16,32,64,128,256,512,1024]
     
     for item in decoded_data {
         if banned_ids.contains(item.id) {
             
         } else {
-            result_string += item.value
+            clear_binary_data += item.value
         }
     }
     
-    var res = strtoul(result_string, nil, 2)
-    var res1 = Int(res)
-    result_string = String(UnicodeScalar(res1 + 848)!)
+    let binary_data_divided_to_8bit: [String] = divideBinaryDataToChars(binary_data: clear_binary_data)
+    
+    for i in 0...binary_data_divided_to_8bit.count-1 {
+        let res = strtoul(binary_data_divided_to_8bit[i], nil, 2)
+        result_string += String(UnicodeScalar(Int(res) + 848)!)
+    }
     
     return result_string
 }

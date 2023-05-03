@@ -9,8 +9,8 @@ import SwiftUI
 
 struct codeHemmingView: View {
 
-    @State var message = "011110010100" // 001110010100
-    
+    @State var message = "01111001010011100100011101100111100000" // 001110010100
+    // 01111001010011100100011101100111100000
     @State var display_legal_error = false
     
     @State var display_error_no_data = false
@@ -50,6 +50,7 @@ struct codeHemmingView: View {
                         .foregroundColor(Color(red: 94/255, green: 32/255, blue: 141/255))
                         .padding(.leading, UIScreen.screenWidth*0)
                         .multilineTextAlignment(.center)
+                        .frame(width: 250, height: 20, alignment: .center)
                     Rectangle()
                         .foregroundColor(Color(red: 123/255, green: 149/255, blue: 56/255))
                         .frame(width: 275, height: 3)
@@ -131,11 +132,11 @@ struct codeHemmingView: View {
                             .foregroundColor(Color(red: 94/255, green: 32/255, blue: 141/255))
                             .padding(.top, 25)
                         displayEncodedData(message: decoded_data)
-                        Text("Your \"error\" bit was " + calculateChangedBit(array_of_control_bits: decode_control_bits))
+                        Text("The problem was in " + calculateChangedBit(array_of_control_bits: decode_control_bits) +  " bit")
                             .font(.custom(Font.bold_font, size: 20))
                             .foregroundColor(Color(red: 94/255, green: 32/255, blue: 141/255))
                             .padding(.top, 25)
-                        Text("Your string was: " + getResultDecodedString())
+                        Text("Your string was: \"" + getResultDecodedString() + "\"")
                             .font(.custom(Font.bold_font, size: 24))
                             .foregroundColor(Color(red: 94/255, green: 32/255, blue: 141/255))
                             .padding(.top, 25)
