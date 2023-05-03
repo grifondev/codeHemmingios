@@ -9,8 +9,9 @@ import SwiftUI
 
 struct codeHemmingView: View {
 
-    @State var message = "01111001010011100100011101100111100000" // 001110010100
+    @State var message = "Дима" // 001110010100
     // 01111001010011100100011101100111100000
+    
     @State var display_legal_error = false
     
     @State var display_error_no_data = false
@@ -245,7 +246,11 @@ struct codeHemmingView: View {
 
 
 func swowErrorBadData() -> some View {
-    Text("BAD VALUE!")
+    Text("Input any data to encode or decode!")
+        .font(.custom(Font.bold_font, size: 24))
+        .foregroundColor(Color.red)
+        .multilineTextAlignment(.center)
+        .frame(width: 300)
 }
 
 func displayControlBits() -> some View {
