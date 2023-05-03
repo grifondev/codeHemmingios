@@ -6,132 +6,133 @@
 //
 import Foundation
 
-var encoded_data: [char] = []
-var decoded_data: [char] = []
-var decoded_data_after: [char] = []
+var binary_encoded_data: [String] = []  //encoded data in binary
 
-var control_bits_before: [control_bits] = []
-var control_bits_after: [control_bits] = []
-var decode_control_bits: [control_bits] = []
+var encoded_data: [char] = []   //result of encoding
+var data_to_decode: [char] = [] //message in binary before decode
+var decoded_data: [char] = []   //result of decoding
 
-func divideBinaryDataToChars(binary_data: String) -> [String] {
-    var result_data: [String] = []
+var control_bits_before: [control_bits] = []    //control bits before changing "error" bit
+var control_bits_after: [control_bits] = [] // control bits after changing "error" bit
+var decode_control_bits: [control_bits] = []    //control bits for decode. Neccessary for calculating changed bit
+
+func divideBinaryDataToChars(binary_data: String) -> [String] { //recieves binary data and returns it like array of 8bit strings
+    var array_of_chars: [String] = []
     
-    var current_bits: String = ""
+    var one_char: String = ""
     for item in binary_data {
-        current_bits += String(item)
-        if current_bits.count == 8 {
-            result_data.append(current_bits)
-            current_bits = ""
+        one_char += String(item)
+        if one_char.count == 8 {
+            array_of_chars.append(one_char)
+            one_char = ""
         }
     }
     
-    return result_data
+    return array_of_chars
 }
 
-func getResultDecodedString() -> String {
-    var result_string: String = ""
-    var clear_binary_data: String = ""
-    let banned_ids: [Int] = [1,2,4,8,16,32,64,128,256,512,1024]
+func decodedString() -> String {    //returns result string after decoding
+    var decoded_str: String = ""
+    var raw_binary: String = ""
+    let ids_of_control_bits: [Int] = [1,2,4,8,16,32,64,128,256,512,1024,2048,4096]
     
-    for item in decoded_data {
-        if banned_ids.contains(item.id) {
-            
-        } else {
-            clear_binary_data += item.value
+    for char in data_to_decode {
+        if !ids_of_control_bits.contains(char.id) {
+            raw_binary += char.value
         }
     }
     
-    let binary_data_divided_to_8bit: [String] = divideBinaryDataToChars(binary_data: clear_binary_data)
+    let binary_data_divided_to_chars: [String] = divideBinaryDataToChars(binary_data: raw_binary)
     
-    for i in 0...binary_data_divided_to_8bit.count-1 {
-        let res = strtoul(binary_data_divided_to_8bit[i], nil, 2)
-        result_string += String(UnicodeScalar(Int(res) + 848)!)
+    for i in 0...binary_data_divided_to_chars.count-1 {
+        let char_10base = strtoul(binary_data_divided_to_chars[i], nil, 2)  //make str to 10 base
+        decoded_str += String(UnicodeScalar(Int(char_10base) + 848)!)
     }
     
-    return result_string
+    return decoded_str
 }
 
-func correctMessage(message: [char]) -> [char] {
-    var temp_array: [String] = []
-    var data_to_decode: [char] = []
+func correctMessage(message: [char]) -> [char] {    //changing "error" bit
+    var raw_string: [String] = []
+    var changed_data: [char] = []
     
     for item in message {
-        temp_array.append(item.value)
+        raw_string.append(item.value)
     }
     
-    temp_array = calculateControlBits(data: temp_array, forDecode: true)
+    raw_string = calculateControlBits(data: raw_string, forDecode: true)
     let changed_bit = calculateChangedBit(array_of_control_bits: decode_control_bits)
     
-    data_to_decode = decoded_data
-    for item in data_to_decode {
+    changed_data = data_to_decode
+    for item in changed_data {
         if String(item.id) == changed_bit {
-            decoded_data = changeValue(char: item, chars: decoded_data)
+            data_to_decode = changeValueOfOneChar(char: item, chars: data_to_decode)
             break
         }
     }
     
-    return data_to_decode
+    return changed_data
 }
 
-func createMessageToDecode(message: String) -> [char] {
-    let message: String = message
-    var temp_arr: [String] = []
+func createEncodableData(message: String) -> [char] {   //converting message to viewable struct
+    decode_control_bits = []
+    var index: Int = 1
     var decoded_message: [char] = []
     
-    for char in message {
-        temp_arr.append(String(char))
-    }
-    
-    for i in 0...temp_arr.count-1 {
-        decoded_message.append(char(id:i+1, value: temp_arr[i]))
+    for element in message {
+        decoded_message.append(char(id: index, value: String(element)))
+        index += 1
     }
 
     return decoded_message
 }
 
-func makeDesision(message: String) -> String {
+func makeDesision(message: String) -> String {  //returns decision what programm will do with inputed message: encode or decode. Returns bad data when input is empty
     if message.isEmpty {
         return "bad data"
-    } else if (message.first?.unicodeScalars.first?.value == "1".unicodeScalars.first?.value ||
-               message.first?.unicodeScalars.first?.value == "0".unicodeScalars.first?.value) {
-        return "decode"
+    } else {
+        for char in message {
+            if String(char) != "1" && String(char) != "0" {
+                return "encode"
+            }
+        }
     }
-    return "encode"
+    return "decode"
 }
 
-func calculateChangedBit(array_of_control_bits: [control_bits]) -> String {
-    var sum = 0
+func calculateChangedBit(array_of_control_bits: [control_bits]) -> String { //usable when encoding. Returns position of "error" bit
+    var bit_with_error = 0
     
     if !array_of_control_bits.isEmpty {
         for i in 0...array_of_control_bits.count-1 {
             if (Int(array_of_control_bits[i].bit)! % 2 == 1) {
-                sum += NSDecimalNumber(decimal: pow(2, i)).intValue
+                bit_with_error += NSDecimalNumber(decimal: pow(2, i)).intValue
             }
         }
     }
     
-    return sum > 0 ? String(sum) : "all bits are good"
+    return bit_with_error > 0 ? String(bit_with_error) : "0"
 }
 
-func calculateError(chars: [char]) -> [char]{
+func calculateError(chars: [char]) -> [char]{   //  calculates control bits when encoding and the message already has error
     control_bits_after = []
-    var data: [String] = []
+    var control_bits: [String] = []
+    var final_control_bits: [char] = []
     
     for item in chars {
-        data.append(item.value)
-    }
-    data = calculateControlBits(data: data, onlyShow: true)
-    
-    var new_chars: [char] = []
-    for i in 0...data.count-1 {
-        new_chars.append(char(id: i+1, value: data[i]))
+        control_bits.append(item.value)
     }
     
-    return new_chars
+    control_bits = calculateControlBits(data: control_bits, onlyShow: true)
+    
+    for i in 0...control_bits.count-1 {
+        final_control_bits.append(char(id: i+1, value: control_bits[i]))
+    }
+    
+    return final_control_bits
 }
 
-func createButtonsFromMessage(message: [String]) -> [char] {
+func visualiseBinaryData(message: [String]) -> [char] { // make encodable [data] viewable for display
     var chars: [char] = []
     for i in 0...message.count-1 {
         chars.append(char(id: i+1, value: message[i]))
@@ -139,34 +140,33 @@ func createButtonsFromMessage(message: [String]) -> [char] {
     return chars
 }
 
-func changeValue(char: char, chars: [char]) -> [char] {
-    var char = char
-    var temp_char: [char] = chars
+func changeValueOfOneChar(char: char, chars: [char]) -> [char] {    //  changing value of one char. Returns new data
+    var char_to_change = char
+    var new_data: [char] = chars
 
-    for elem in temp_char {
-        if elem.id == char.id {
-            if char.value == "0" {
-                char.value = "1"
-            } else if char.value == "1" {
-                char.value = "0"
+    for elem in new_data {
+        if elem.id == char_to_change.id {
+            if char_to_change.value == "0" {
+                char_to_change.value = "1"
+            } else if char_to_change.value == "1" {
+                char_to_change.value = "0"
             }
-            temp_char.remove(at: char.id-1)
-            temp_char.insert(char, at: char.id-1)
+            new_data.remove(at: char_to_change.id-1)    //  remove wrong value
+            new_data.insert(char_to_change, at: char_to_change.id-1)    //  insert correct value
 
             break
         }
     }
-    return temp_char
+    return new_data
 }
 
-func calculateControlBits(data: [String], onlyShow: Bool = false, forDecode: Bool = false) -> [String] {
+func calculateControlBits(data: [String], onlyShow: Bool = false, forDecode: Bool = false) -> [String] {    //calculating all control_bits
     var data = data
     let data_len: Int = data.count
     
     var step: Int = 0
     
     var current_position = 1
-    var counter: Int = 0
     
     while current_position < data_len {
         var count_of_ones = 0
@@ -180,7 +180,7 @@ func calculateControlBits(data: [String], onlyShow: Bool = false, forDecode: Boo
                 }
             }
         }
-        let isOne = count_of_ones % 2
+        let isOne = count_of_ones & 1
         
         if !onlyShow {
             data[current_position-1] = String(isOne)
@@ -195,16 +195,15 @@ func calculateControlBits(data: [String], onlyShow: Bool = false, forDecode: Boo
         if forDecode {
             decode_control_bits.append(control_bits(bit: String(count_of_ones)))
         }
-        
-        counter += 1
-        current_position = NSDecimalNumber(decimal: pow(2, counter)).intValue
+
+        current_position <<= 1
         step = current_position-1
     }
     
     return data
 }
 
-func getBinaryFromChar(char: String) -> String {
+func getBinaryFromChar(char: String) -> String {    //recieves char and returns binary view of this
     let asciiChar: UInt32? = char.unicodeScalars.first?.value
     var asciiCode = asciiChar!
     
@@ -212,46 +211,44 @@ func getBinaryFromChar(char: String) -> String {
         asciiCode -= 848
     }       //if the symbol is russian
     
-    let char_second_base: String = String(asciiCode, radix: 2) //   convert to 2 base
-    
-    //print(String(asciiCode) + " --> " + char_second_base)
+    let char_second_base: String = String(asciiCode, radix: 2) //   convert decimal to binary
     
     return char_second_base
 }
 
-func insertZeroesInPositions(message:[String]) -> [String] {
+func insertControlBitsInRawMessage(message:[String]) -> [String] {  //returns array of strings with inputed control bits positions
     var message = message
     
-    let arrayLen: Int = message.count
+    let data_len: Int = message.count
     var counter: Int = 0
-    var currentPosition = 1
+    var curr_position = 1
 
-    while currentPosition <= arrayLen {
-        message.insert("0", at: currentPosition-1)
+    while curr_position <= data_len {
+        message.insert("0", at: curr_position-1)
         
         counter += 1
-        currentPosition = NSDecimalNumber(decimal: pow(2, counter)).intValue
+        curr_position = NSDecimalNumber(decimal: pow(2, counter)).intValue  //  calculating position of the next control bit
     }
     
     return message
 }
 
-func make2base(message: String) -> [String] {
+func make2base(message: String) -> [String] {   //  returns array of binary data
     control_bits_before = []
     
     var words_in_2base: [String] = []
     
     for char in message {
-        let binary = getBinaryFromChar(char: String(char))  // recieves binary
+        let binary_data = getBinaryFromChar(char: String(char))  // recieves binary
         
-        for val in binary {
-            words_in_2base.append(String(val))
+        for val in binary_data {
+            words_in_2base.append(String(val))  //  appending values
         }
     }
 
-    words_in_2base = insertZeroesInPositions(message: words_in_2base)
+    words_in_2base = insertControlBitsInRawMessage(message: words_in_2base) //  inserting empty control bits into data
     
-    words_in_2base = calculateControlBits(data: words_in_2base)
+    words_in_2base = calculateControlBits(data: words_in_2base) //  calculating values for control bits
     
     return words_in_2base
 }

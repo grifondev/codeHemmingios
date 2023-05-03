@@ -9,16 +9,12 @@ import SwiftUI
 
 struct codeHemmingView: View {
 
-    @State var message = "Дима" // 001110010100
-    // 01111001010011100100011101100111100000
+    @State var message = "001110010000" // 001110010100 "Д"
+    // 01101001010011100100011101100111100000 "Дима"
     
-    @State var display_legal_error = false
-    
-    @State var display_error_no_data = false
-    
-    @State var display_encoded_message = false
-    
-    @State var disassembled_message: [String] = []
+    @State var display_encoding = false //  flag for view when encoding
+    @State var display_decoding = false //  flag for view when encoding
+    @State var display_error_no_data = false    //displays error when input is empty
     
     var body: some View {
         NavigationView {
@@ -37,13 +33,12 @@ struct codeHemmingView: View {
                         .padding(.trailing, 5)
                     Text("Hemming code")
                         .font(.custom(Font.bold_font, size: 35))
-                        .padding(.top, 10)
                         .foregroundColor(Color(red: 148/255, green: 83/255, blue: 198/255))
-                }
-                .padding(.top, 40)
+                }       // caption
+                .padding(.top, 20)
                 Text("Input your message below:")
                     .font(.custom(Font.bold_font, size: 22))
-                    .padding(.top, 10)
+                    .padding(.top, 2)
                     .foregroundColor(Color(red: 94/255, green: 32/255, blue: 141/255))
                 ZStack {
                     TextField("Input your message here", text: $message)
@@ -58,28 +53,28 @@ struct codeHemmingView: View {
                         .cornerRadius(10)
                         .padding(.top, 40)
                         .padding(.leading, UIScreen.screenWidth*0)
-                }
+                }   // input field
                 
                 Button {
-                    if makeDesision(message: message) == "encode" {
-                        disassembled_message = make2base(message: message)
-                        encoded_data = createButtonsFromMessage(message: disassembled_message)
-                        display_legal_error = true
-                        display_error_no_data = false
-                        display_encoded_message = false
-                    } else if makeDesision(message: message) == "decode" {
-                        decoded_data = createMessageToDecode(message: message)
-                        decoded_data_after = correctMessage(message: decoded_data)
-                        display_error_no_data = false
-                        display_legal_error = false
-                        display_encoded_message = true
-                    } else if makeDesision(message: message) == "bad data" {
-                        display_error_no_data = true
-                        display_legal_error = false
-                        display_encoded_message = false
-                    }
-                
+                    var current_decision: String = makeDesision(message: message)
                     
+                    if current_decision == "encode" {   //encoding process
+                        binary_encoded_data = make2base(message: message)
+                        encoded_data = visualiseBinaryData(message: binary_encoded_data)
+                        display_encoding = true
+                        display_error_no_data = false
+                        display_decoding = false
+                    } else if current_decision == "decode" {    //decosind process
+                        data_to_decode = createEncodableData(message: message)
+                        decoded_data = correctMessage(message: data_to_decode)
+                        display_error_no_data = false
+                        display_encoding = false
+                        display_decoding = true
+                    } else if current_decision == "bad data" {  //error case
+                        display_error_no_data = true
+                        display_encoding = false
+                        display_decoding = false
+                    }
                 } label: {
                     ZStack {
                         Rectangle()
@@ -94,55 +89,19 @@ struct codeHemmingView: View {
                             .cornerRadius(30)
                             .padding(.top, 40)
                             .padding(.trailing, 5)
-                        Text("convert")
+                        Text("process")
                             .font(.custom(Font.bold_font, size: 25))
                             .padding(.top, 40)
                             .foregroundColor(Color(red: 148/255, green: 83/255, blue: 198/255))
                     }
                     .padding(.top, -40)
-                }
+                }       // "process" button
                 
-                if display_error_no_data {
-                    swowErrorBadData()
+                if display_error_no_data {  //if input field is empty
+                    showErrorEmptyMessage()
                 } else {
-                    
-                    if display_legal_error {
-                        if disassembled_message.count > 0 {
-                            Text("Your message in binary:")
-                                .font(.custom(Font.bold_font, size: 14))
-                                .foregroundColor(Color(red: 94/255, green: 32/255, blue: 141/255))
-                                .padding(.top, 5)
-                            displayBinaryMessage(message: encoded_data)
-                        }
-                        
-                        displayControlBits()
-                        Text("Your changed bit is " + calculateChangedBit(array_of_control_bits: control_bits_after))
-                            .font(.custom(Font.bold_font, size: 18))
-                            .foregroundColor(Color(red: 94/255, green: 32/255, blue: 141/255))
-                            .padding(.top, 40)
-                    }
-                    
-                    if display_encoded_message {
-                        Text("Before:")
-                            .font(.custom(Font.bold_font, size: 24))
-                            .foregroundColor(Color(red: 94/255, green: 32/255, blue: 141/255))
-                            .padding(.top, 25)
-                        displayEncodedData(message: decoded_data_after)
-                        Text("After:")
-                            .font(.custom(Font.bold_font, size: 24))
-                            .foregroundColor(Color(red: 94/255, green: 32/255, blue: 141/255))
-                            .padding(.top, 25)
-                        displayEncodedData(message: decoded_data)
-                        Text("The problem was in " + calculateChangedBit(array_of_control_bits: decode_control_bits) +  " bit")
-                            .font(.custom(Font.bold_font, size: 20))
-                            .foregroundColor(Color(red: 94/255, green: 32/255, blue: 141/255))
-                            .padding(.top, 25)
-                        Text("Your string was: \"" + getResultDecodedString() + "\"")
-                            .font(.custom(Font.bold_font, size: 24))
-                            .foregroundColor(Color(red: 94/255, green: 32/255, blue: 141/255))
-                            .padding(.top, 25)
-                    }
-                        
+                    if display_encoding { displayEncodedData() }    //encoding view
+                    else if display_decoding { displayDecodedData() }   //decoding view
                 }
                 
                 Spacer()
@@ -152,113 +111,150 @@ struct codeHemmingView: View {
         }
     }
     
-    func displayBinaryMessage(message: [char]) -> some View {
+    func displayEncodedData() -> some View {
         return VStack {
-            ZStack {
-                Rectangle()
-                    .foregroundColor(Color(red: 183/255, green: 208/255, blue: 84/255))
-                    .frame(width: 350, height: 50)
-                    .cornerRadius(60)
-                    .padding(.top,3)
-                    .padding(.leading,3)
-                Rectangle()
-                    .foregroundColor(Color(red: 183/255, green: 248/255, blue: 84/255))
-                    .frame(width: 350, height: 50)
-                    .cornerRadius(60)
-                ScrollView(.horizontal, showsIndicators: false) {
-                    VStack {
-                        HStack {
-                            ForEach(message, id: \.id) { one_char in
-                                VStack {
-                                    Text(String(one_char.id))
-                                        .font(.custom(Font.bold_font, size: 14))
-                                        .foregroundColor(Color(red: 94/255, green: 32/255, blue: 141/255))
-                                        .multilineTextAlignment(.center)
-                                    char(id: one_char.id, value: String(one_char.value))
-                                }
-                            }
-                        }
-                    }
-                }
-                .frame(width: 310)
-                .multilineTextAlignment(.center)
-            }
+            Text("Your message in binary:")
+                .font(.custom(Font.bold_font, size: 18))
+                .foregroundColor(Color(red: 94/255, green: 32/255, blue: 141/255))
+                .padding(.top, 5)
+            
+            displayScrollableData(message: encoded_data)    //message in binary with function of scrolling
+                .padding(.top, -5)
             
             Button {
-                display_legal_error.toggle()
-                display_legal_error.toggle()
+                display_encoding.toggle()
+                display_encoding.toggle()   //resets view when state variable was changed
             } label: {
                 ZStack {
                     Rectangle()
                         .foregroundColor(Color(red: 123/255, green: 149/255, blue: 56/255))
-                        .frame(width: 200, height: 25)
+                        .frame(width: 200, height: 30)
                         .cornerRadius(30)
                         .padding(.top, 3)
                         .padding(.leading, 1)
                     Rectangle()
                         .foregroundColor(Color(red: 203/255, green: 248/255, blue: 84/255))
-                        .frame(width: 200, height: 25)
+                        .frame(width: 200, height: 30)
                         .cornerRadius(30)
                         .padding(.trailing, 5)
-                    Text("find bit with error")
+                    Text("Find bit with error")
                         .font(.custom(Font.bold_font, size: 16))
                         .foregroundColor(Color(red: 148/255, green: 83/255, blue: 198/255))
                 }
+                .padding(.top, 10)
+            }
+            
+            displayControlBits()    //displays control bits
+            
+            if calculateChangedBit(array_of_control_bits: control_bits_after) == "0" {  //if all bits by default
+                Text("There is no changed bit")
+                    .font(.custom(Font.bold_font, size: 18))
+                    .foregroundColor(Color(red: 94/255, green: 32/255, blue: 141/255))
+                    .padding(.top, 20)
+            } else {    //if any of bit was changed
+                Text("Your changed bit is " + calculateChangedBit(array_of_control_bits: control_bits_after))
+                    .font(.custom(Font.bold_font, size: 18))
+                    .foregroundColor(Color(red: 94/255, green: 32/255, blue: 141/255))
+                    .padding(.top, 20)
             }
         }
     }
     
-    func displayEncodedData(message: [char]) -> some View {
+    func displayDecodedData() -> some View {
         return VStack {
             ZStack {
+                Text("Before:")
+                    .font(.custom(Font.bold_font, size: 24))
+                    .foregroundColor(Color(red: 94/255, green: 32/255, blue: 141/255))
+                    .padding(.top, -40)
+                displayScrollableData(message: decoded_data)
+                    .padding(.top, 50)
                 Rectangle()
-                    .foregroundColor(Color(red: 183/255, green: 208/255, blue: 84/255))
+                    .padding(.top, 50)
+                    .foregroundColor(Color(red: 1, green: 1, blue: 1, opacity: 0))
                     .frame(width: 350, height: 50)
-                    .cornerRadius(60)
-                    .padding(.top,3)
-                    .padding(.leading,3)
+            }   //data before decoding
+            ZStack {
+                Text("After:")
+                    .font(.custom(Font.bold_font, size: 24))
+                    .foregroundColor(Color(red: 94/255, green: 32/255, blue: 141/255))
+                    .padding(.top, -40)
+                displayScrollableData(message: data_to_decode)
+                    .padding(.top, 50)
                 Rectangle()
-                    .foregroundColor(Color(red: 183/255, green: 248/255, blue: 84/255))
+                    .padding(.top, 50)
+                    .foregroundColor(Color(red: 1, green: 1, blue: 1, opacity: 0))
                     .frame(width: 350, height: 50)
-                    .cornerRadius(60)
-                ScrollView(.horizontal, showsIndicators: false) {
-                    VStack {
-                        HStack {
-                            ForEach(message, id: \.id) { one_char in
-                                VStack {
-                                    Text(String(one_char.id))
-                                        .font(.custom(Font.bold_font, size: 14))
-                                        .foregroundColor(Color(red: 94/255, green: 32/255, blue: 141/255))
-                                        .multilineTextAlignment(.center)
-                                    char(id: one_char.id, value: String(one_char.value))
-                                }
+            }   //data after decoding
+            
+            if calculateChangedBit(array_of_control_bits: decode_control_bits) == "0" { //if message was without error
+                Text("There is no changed bits in your message")
+                    .font(.custom(Font.bold_font, size: 24))
+                    .foregroundColor(Color(red: 94/255, green: 32/255, blue: 141/255))
+                    .multilineTextAlignment(.center)
+                    .frame(width: 300, height: 75, alignment: .center)
+                    .padding(.top, 25)
+
+            } else {    //if there are some errors in the message
+                Text("The problem was in " + calculateChangedBit(array_of_control_bits: decode_control_bits) +  " bit")
+                    .font(.custom(Font.bold_font, size: 20))
+                    .foregroundColor(Color(red: 94/255, green: 32/255, blue: 141/255))
+                    .padding(.top, 25)
+                Text("Your string was: \"" + decodedString() + "\"")
+                    .font(.custom(Font.bold_font, size: 24))
+                    .foregroundColor(Color(red: 94/255, green: 32/255, blue: 141/255))
+                    .padding(.top, 25)
+            }
+        }
+    }
+    
+    func displayScrollableData(message: [char]) -> some View {      //returns horizontal scrollview with inputed data
+        return ZStack {
+            Rectangle()
+                .foregroundColor(Color(red: 183/255, green: 208/255, blue: 84/255))
+                .frame(width: 350, height: 50)
+                .cornerRadius(60)
+                .padding(.top,3)
+                .padding(.leading,3)
+            Rectangle()
+                .foregroundColor(Color(red: 183/255, green: 248/255, blue: 84/255))
+                .frame(width: 350, height: 50)
+                .cornerRadius(60)
+            ScrollView(.horizontal, showsIndicators: false) {
+                VStack {
+                    HStack {
+                        ForEach(message, id: \.id) { one_char in
+                            VStack {
+                                Text(String(one_char.id))
+                                    .font(.custom(Font.bold_font, size: 14))
+                                    .foregroundColor(Color(red: 94/255, green: 32/255, blue: 141/255))
+                                    .multilineTextAlignment(.center)
+                                char(id: one_char.id, value: String(one_char.value))
                             }
                         }
                     }
                 }
-                .frame(width: 310)
-                .multilineTextAlignment(.center)
             }
+            .frame(width: 310)
+            .multilineTextAlignment(.center)
         }
     }
 }
 
-
-
-func swowErrorBadData() -> some View {
-    Text("Input any data to encode or decode!")
+func showErrorEmptyMessage() -> some View {     //returns when no data in input field
+    Text("Input any message to encode or decode!")
         .font(.custom(Font.bold_font, size: 24))
         .foregroundColor(Color.red)
         .multilineTextAlignment(.center)
         .frame(width: 300)
 }
 
-func displayControlBits() -> some View {
+func displayControlBits() -> some View {    //displays control bits when encoding
     return VStack {
         Text("Control bits:")
             .font(.custom(Font.bold_font, size: 24))
             .foregroundColor(Color(red: 148/255, green: 83/255, blue: 198/255))
-            .padding(.top, 30)
+            .padding(.top, 10)
         HStack {
             VStack {
                 Text("Before:")
@@ -313,8 +309,8 @@ public struct char: View {
     var value: String
     public var body: some View {
         Button {
-            encoded_data = changeValue(char: self, chars: encoded_data)
-            encoded_data = calculateError(chars: encoded_data)
+            encoded_data = changeValueOfOneChar(char: self, chars: encoded_data)    //changing value in mutable data
+            encoded_data = calculateError(chars: encoded_data)  //calculating char with error
         } label: {
             Text(value)
                 .font(.custom(Font.bold_font, size: 18))
